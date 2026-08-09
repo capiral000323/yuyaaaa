@@ -223,98 +223,166 @@ window.addEventListener("scroll", () => {
   lastScrollY = window.scrollY;
 }, { passive: true });
 
+/* Envelope interaction */
+const openEnvelope = document.getElementById("openEnvelope");
+const letterOverlay = document.getElementById("letterOverlay");
+const closeLetter = document.getElementById("closeLetter");
 
-/* Unexpected extras */
-const introScreen = document.getElementById("introScreen");
-const enterLove = document.getElementById("enterLove");
-const sparkleLayer = document.getElementById("sparkleLayer");
-
-enterLove.addEventListener("click", () => {
-  introScreen.classList.add("hide");
-  burstSparkles(window.innerWidth / 2, window.innerHeight / 2, 30);
-  showToast("Welcome to our little universe ♡");
-});
-
-function burstSparkles(x, y, amount = 16) {
-  const symbols = ["✦", "♡", "♥", "·"];
-  for (let i = 0; i < amount; i++) {
-    const el = document.createElement("span");
-    el.className = "sparkle";
-    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-    el.style.left = `${x}px`;
-    el.style.top = `${y}px`;
-    el.style.setProperty("--dx", `${(Math.random() - .5) * 280}px`);
-    el.style.setProperty("--dy", `${(Math.random() - .5) * 280}px`);
-    el.style.animationDelay = `${Math.random() * .15}s`;
-    sparkleLayer.appendChild(el);
-    setTimeout(() => el.remove(), 1500);
-  }
+if (openEnvelope && letterOverlay) {
+  openEnvelope.addEventListener("click", () => {
+    openEnvelope.classList.add("open");
+    setTimeout(() => {
+      letterOverlay.classList.add("show");
+      letterOverlay.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }, 650);
+  });
 }
-
-const missBtn = document.getElementById("missBtn");
-const randomLoveText = document.getElementById("randomLoveText");
-const missCount = document.getElementById("missCount");
-let misses = Number(localStorage.getItem("yuyaMissCount") || 0);
-
-const missMessages = [
-  "If you miss me, look at our memories. I'm probably missing you too. ♡",
-  "Distance, busy days, and time don't change how special you are.",
-  "Come here. You owe me one hug. Actually... make it ten.",
-  "Somewhere between all my thoughts, you keep showing up.",
-  "You are still my favorite notification.",
-  "I hope you know how loved you are, even on quiet days.",
-  "Okay, enough missing me. Come make another memory with me. ✦"
-];
-
-missCount.textContent = misses;
-
-missBtn.addEventListener("click", () => {
-  randomLoveText.textContent = missMessages[Math.floor(Math.random() * missMessages.length)];
-  misses++;
-  missCount.textContent = misses;
-  localStorage.setItem("yuyaMissCount", misses);
-  missBtn.classList.remove("shake-love");
-  void missBtn.offsetWidth;
-  missBtn.classList.add("shake-love");
-  burstSparkles(
-    missBtn.getBoundingClientRect().left + missBtn.offsetWidth / 2,
-    missBtn.getBoundingClientRect().top,
-    12
-  );
-});
-
-const randomMemoryBtn = document.getElementById("randomMemoryBtn");
-
-randomMemoryBtn.addEventListener("click", () => {
-  const cards = [...document.querySelectorAll(".photo-card")];
-  if (!cards.length || typeof updateCarousel !== "function") return;
-  const random = Math.floor(Math.random() * cards.length);
-  updateCarousel(random);
-  document.getElementById("memories").scrollIntoView({ behavior: "smooth", block: "center" });
-  setTimeout(() => cards[random].click(), 650);
-  showToast(`Memory ${String(random + 1).padStart(2, "0")} chose you ♡`);
-});
-
-/* Secret keyboard Easter egg: type CAPS */
-let secretKeys = "";
+if (closeLetter && letterOverlay) {
+  closeLetter.addEventListener("click", () => {
+    letterOverlay.classList.remove("show");
+    letterOverlay.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    openEnvelope?.classList.remove("open");
+  });
+}
 document.addEventListener("keydown", (e) => {
-  if (e.key.length !== 1) return;
-  secretKeys = (secretKeys + e.key.toUpperCase()).slice(-4);
-  if (secretKeys === "CAPS") {
-    burstSparkles(window.innerWidth / 2, window.innerHeight / 2, 45);
-    showToast("CAPS mode unlocked ✦");
-    document.body.classList.add("dreamy-mode");
-    setTimeout(() => document.body.classList.remove("dreamy-mode"), 5000);
-    secretKeys = "";
-  }
+  if (e.key === "Escape" && letterOverlay?.classList.contains("show")) closeLetter?.click();
 });
 
-/* Little click surprise anywhere on the page */
-let clickCount = 0;
-document.addEventListener("click", (e) => {
-  if (e.target.closest("button, a, input, textarea")) return;
-  clickCount++;
-  if (clickCount % 10 === 0) {
-    burstSparkles(e.clientX, e.clientY, 18);
+/* ===== UNEXPECTED FEATURES ===== */
+(() => {
+  const modal = document.getElementById("surpriseModal");
+  const modalContent = document.getElementById("surpriseModalContent");
+  const modalClose = document.getElementById("surpriseClose");
+  const secretOverlay = document.getElementById("secretCodeOverlay");
+  const secretClose = document.getElementById("secretClose");
+  const loveFill = document.getElementById("loveFill");
+  const lovePercent = document.getElementById("lovePercent");
+  const loveMeterText = document.getElementById("loveMeterText");
+
+  const misses = [
+    "If you miss me right now, just remember: somewhere in this little website, I left a piece of my heart for you. ♡",
+    "Come here. No long explanation. Just one virtual hug from Caps. 🫂",
+    "I hope you know that even on busy days, you are still one of my favorite thoughts.",
+    "If I could teleport right now, I would probably just sit beside you and annoy you. 😭❤️"
+  ];
+
+  const futures = [
+    "More beaches. More late-night talks. More random trips. More memories.",
+    "Someday we'll look back at this website and laugh at how cute and cheesy we were.",
+    "This isn't the end of our memories. It's just the beginning of the ones we haven't made yet.",
+    "Our next chapter hasn't been written yet. Let's make it worth remembering."
+  ];
+
+  const memories = [
+    "MAR 17–19 — One of the best memories with you.",
+    "That beach day where you made me feel special.",
+    "Every random trip that somehow became a memory.",
+    "The little moments that didn't seem big at the time—but stayed with me."
+  ];
+
+  function showModal(title, text, button="Aww ♡") {
+    if (!modal || !modalContent) return;
+    modalContent.innerHTML = `<p class="eyebrow">A little surprise</p><h2>${title}</h2><p>${text}</p><button class="surprise-main-btn" id="surpriseAction">${button}</button>`;
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+    document.getElementById("surpriseAction")?.addEventListener("click", closeModal);
   }
-});
+  function closeModal(){
+    modal?.classList.remove("show");
+    modal?.setAttribute("aria-hidden","true");
+    document.body.style.overflow="";
+  }
+
+  document.querySelectorAll(".surprise-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const type = card.dataset.surprise;
+      if(type === "miss") {
+        const msg = misses[Math.floor(Math.random()*misses.length)];
+        showModal("I miss you too.", msg, "I miss you ♡");
+      }
+      if(type === "memory") {
+        const msg = memories[Math.floor(Math.random()*memories.length)];
+        showModal("Memory unlocked 🎞️", msg, "Keep the memories");
+      }
+      if(type === "future") {
+        const msg = futures[Math.floor(Math.random()*futures.length)];
+        showModal("Plot twist: we're not done yet. 🔮", msg, "Next chapter ♡");
+      }
+      if(type === "secret") {
+        if(secretOverlay){
+          secretOverlay.classList.add("show");
+          secretOverlay.setAttribute("aria-hidden","false");
+          document.body.style.overflow="hidden";
+          let n = Number(localStorage.getItem("capsSecretCount") || 0) + 1;
+          localStorage.setItem("capsSecretCount", n);
+          const count = document.getElementById("secretCount");
+          if(count) count.textContent = "♡ " + n;
+        }
+      }
+    });
+  });
+
+  modalClose?.addEventListener("click", closeModal);
+  modal?.addEventListener("click", e => { if(e.target === modal) closeModal(); });
+  secretClose?.addEventListener("click", () => {
+    secretOverlay.classList.remove("show");
+    secretOverlay.setAttribute("aria-hidden","true");
+    document.body.style.overflow="";
+  });
+
+  // Keyboard easter egg: type CAPS anywhere.
+  let typed="";
+  document.addEventListener("keydown", e => {
+    if(e.key.length === 1) {
+      typed = (typed + e.key.toLowerCase()).slice(-4);
+      if(typed === "caps" && secretOverlay){
+        secretOverlay.classList.add("show");
+        secretOverlay.setAttribute("aria-hidden","false");
+        document.body.style.overflow="hidden";
+        typed="";
+      }
+    }
+    if(e.key === "Escape"){
+      closeModal();
+      if(secretOverlay?.classList.contains("show")) secretClose?.click();
+    }
+  });
+
+  // Love meter slowly "breaks" beyond 100% when clicked.
+  let love = 100;
+  document.querySelector(".love-meter")?.addEventListener("click", () => {
+    love = Math.min(999, love + 1);
+    if(loveFill) loveFill.style.width = Math.min(100, love/9.99) + "%";
+    if(lovePercent) lovePercent.textContent = love + "%";
+    if(loveMeterText) loveMeterText.textContent = love > 100 ? "Error: love exceeded the maximum. 😭❤️" : "Love level: dangerously high.";
+  });
+})();
+
+/* ================= CINEMATIC LANDING ================= */
+(() => {
+  const landing = document.getElementById("landingPage");
+  const enter = document.getElementById("enterStory");
+  if (!landing || !enter) return;
+
+  document.body.classList.add("landing-locked");
+
+  const enterStory = () => {
+    landing.classList.add("hide");
+    document.body.classList.remove("landing-locked");
+    try { sessionStorage.setItem("yuyaLandingSeen","1"); } catch(e) {}
+    setTimeout(() => landing.remove(), 1200);
+  };
+
+  enter.addEventListener("click", enterStory);
+
+  // Space/Enter also opens the story.
+  document.addEventListener("keydown", (e) => {
+    if ((e.key === "Enter" || e.key === " ") && !landing.classList.contains("hide")) {
+      e.preventDefault();
+      enterStory();
+    }
+  });
+})();
