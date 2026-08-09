@@ -11,17 +11,42 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="intro-screen" id="introScreen">
-    <div class="intro-content">
-      <div class="intro-heart">♡</div>
-      <p class="eyebrow">A tiny place for us</p>
-      <h2>For Yuya</h2>
-      <p>Wait... there's more than meets the eye.</p>
-      <button id="enterLove" type="button">Enter our story ✦</button>
-      <small>turn your sound on for the full experience</small>
-    </div>
+
+<!-- CINEMATIC LANDING PAGE -->
+<div class="landing-page" id="landingPage">
+  <div class="landing-stars"></div>
+  <div class="landing-glow landing-glow-1"></div>
+  <div class="landing-glow landing-glow-2"></div>
+
+  <div class="landing-content">
+    <p class="landing-mini">A little website made with love</p>
+    <div class="landing-heart">♡</div>
+    <p class="landing-pretitle">FOR</p>
+    <h1>Yuya</h1>
+    <p class="landing-subtitle">from Caps</p>
+
+    <div class="landing-line"></div>
+
+    <p class="landing-message">
+      Some memories are too special<br>
+      to fit inside a normal website.
+    </p>
+
+    <button class="landing-enter" id="enterStory" type="button">
+      <span>Enter Our Story</span>
+      <b>→</b>
+    </button>
+
+    <p class="landing-hint">turn the volume up • take your time • explore everything</p>
   </div>
-  <div class="sparkle-layer" id="sparkleLayer" aria-hidden="true"></div>
+
+  <div class="landing-bottom">
+    <span>FEB 10, 2026</span>
+    <span>∞</span>
+    <span>AND MANY MORE TO COME</span>
+  </div>
+</div>
+
   <div class="stars" aria-hidden="true"></div>
   <div class="glow glow-1"></div>
   <div class="glow glow-2"></div>
@@ -57,7 +82,26 @@
       </div>
     </section>
 
-    <section id="letter" class="section">
+    
+<section class="envelope-section" id="letter">
+  <div class="envelope-intro">
+    <p class="eyebrow">Something for you</p>
+    <h2>Before you read my letter...</h2>
+    <p>There is one little thing I want you to open first.</p>
+  </div>
+  <button class="love-envelope" id="openEnvelope" type="button" aria-label="Open the love letter">
+    <span class="env-back"></span>
+    <span class="env-paper"><b>For Yuya ♡</b><small>with love, Caps</small></span>
+    <span class="env-flap"></span>
+    <span class="env-front"></span>
+    <span class="env-seal">♥</span>
+  </button>
+  <p class="envelope-hint">Tap the envelope to open ♡</p>
+</section>
+
+<div class="letter-overlay" id="letterOverlay" aria-hidden="true">
+  <button class="letter-close" id="closeLetter" type="button">× Close</button>
+  <div class="letter-stage"><section id="letter" class="section">
       <div class="section-heading">
         <span>01</span>
         <h2>A letter for you</h2>
@@ -89,7 +133,9 @@
         </p>
         <p class="signature">Always yours,<br><em>Caps ♡</em></p>
       </div>
-    </section>
+    </section></div>
+</div>
+
 
     <section class="section" id="timeline">
       <div class="section-heading">
@@ -231,28 +277,6 @@
       </div>
     </section>
 
-    <section class="section unexpected-section">
-      <div class="unexpected-card">
-        <div class="radar"></div>
-        <p class="eyebrow">Unexpected</p>
-        <h2>Press this when you miss me.</h2>
-        <p id="randomLoveText">I have a message waiting for you.</p>
-        <button class="miss-btn" id="missBtn">I miss you ♡</button>
-        <div class="miss-counter"><span id="missCount">0</span> little reminders</div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="memory-machine">
-        <div>
-          <p class="eyebrow">Memory machine</p>
-          <h2>Let fate choose a memory.</h2>
-          <p>Don't look away. The next one is random.</p>
-        </div>
-        <button class="random-memory-btn" id="randomMemoryBtn">Surprise me ✦</button>
-      </div>
-    </section>
-
     <section class="section promise-section">
       <div class="section-heading">
         <span>06</span>
@@ -332,5 +356,66 @@
   <div class="toast" id="toast">Tap the music button to play our song ♡</div>
 
   <script src="script.js"></script>
+
+<section class="section surprise-lab" id="surprises">
+  <div class="section-heading">
+    <p class="eyebrow">Hidden in our story</p>
+    <h2>One More Thing…</h2>
+    <p>Because a normal love website is not enough. ♡</p>
+  </div>
+
+  <div class="surprise-grid">
+    <button class="surprise-card" data-surprise="miss">
+      <span class="surprise-icon">💌</span>
+      <strong>Press When You Miss Me</strong>
+      <small>Tap it. I dare you.</small>
+    </button>
+
+    <button class="surprise-card" data-surprise="memory">
+      <span class="surprise-icon">🎞️</span>
+      <strong>Random Memory</strong>
+      <small>Let the website choose.</small>
+    </button>
+
+    <button class="surprise-card" data-surprise="future">
+      <span class="surprise-icon">🔮</span>
+      <strong>Our Future</strong>
+      <small>A little message from us.</small>
+    </button>
+
+    <button class="surprise-card" data-surprise="secret">
+      <span class="surprise-icon">🔐</span>
+      <strong>Secret Room</strong>
+      <small>There is something hidden.</small>
+    </button>
+  </div>
+
+  <div class="love-meter">
+    <div class="meter-top">
+      <span>Yuya × Caps</span>
+      <strong id="lovePercent">100%</strong>
+    </div>
+    <div class="meter-track"><span id="loveFill"></span></div>
+    <p id="loveMeterText">Love level: dangerously high.</p>
+  </div>
+</section>
+
+<div class="surprise-modal" id="surpriseModal" aria-hidden="true">
+  <div class="surprise-modal-box">
+    <button class="surprise-close" id="surpriseClose">×</button>
+    <div id="surpriseModalContent"></div>
+  </div>
+</div>
+
+<div class="secret-code-overlay" id="secretCodeOverlay" aria-hidden="true">
+  <div class="secret-code-box">
+    <p class="eyebrow">You found it.</p>
+    <h2>CAPS MODE 🔓</h2>
+    <p>You weren't supposed to find this that fast. 😭</p>
+    <div class="secret-count" id="secretCount">♡</div>
+    <button id="secretClose">Continue our story</button>
+  </div>
+</div>
+
 </body>
 </html>
